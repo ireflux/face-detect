@@ -254,27 +254,21 @@ const calculateBeautyScore = () => {
 const loadModels = async () => {
   try {
     console.log('开始加载模型...')
-    
-    // 设置模型路径
-    const MODEL_URL = '/models'
-    
+    // 设置模型路径，修正为相对根目录的 models 目录，适配 Vite/gh-pages 部署
+    const MODEL_URL = import.meta.env.BASE_URL + 'models'
     // 按顺序加载模型
     console.log('加载人脸检测模型...')
     await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL)
     console.log('人脸检测模型加载完成')
-    
     console.log('加载人脸特征点模型...')
     await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL)
     console.log('人脸特征点模型加载完成')
-    
     console.log('加载人脸识别模型...')
     await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
     console.log('人脸识别模型加载完成')
-    
     console.log('加载表情识别模型...')
     await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
     console.log('表情识别模型加载完成')
-    
     console.log('所有模型加载完成')
   } catch (error) {
     console.error('模型加载失败:', error)
@@ -423,6 +417,11 @@ const stopCamera = () => {
     stopDetection()
     stopDanmaku()
     showBeautyScore.value = false
+    // 清除 canvas 上的人脸框和特征点
+    if (canvas.value) {
+      const ctx = canvas.value.getContext('2d')
+      ctx.clearRect(0, 0, canvas.value.width, canvas.value.height)
+    }
   }
 }
 
