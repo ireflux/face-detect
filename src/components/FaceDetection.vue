@@ -1,8 +1,8 @@
 <template>
   <div class="face-detection">
     <div class="video-container" ref="videoContainer">
-      <video ref="video" autoplay muted playsinline></video>
-      <canvas ref="canvas"></canvas>
+      <video ref="video" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;"></video>
+      <canvas ref="canvas" style="width:100%;height:100%;position:absolute;top:0;left:0;"></canvas>
       <div v-if="!isCameraActive" class="camera-placeholder">
         <i class="camera-icon">📷</i>
         <p>点击下方按钮启动摄像头</p>
@@ -280,122 +280,82 @@ const loadModels = async () => {
 const startCamera = async () => {
   try {
     console.log('正在请求摄像头权限...')
-    
     // 检查是否使用 HTTPS
     if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
       throw new Error('摄像头功能需要 HTTPS 连接，请使用 HTTPS 访问网站')
     }
-
     // 检查并获取 mediaDevices API
     if (!navigator.mediaDevices) {
       navigator.mediaDevices = {}
     }
-
-    // 添加 getUserMedia 的兼容性处理
     if (!navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia = function(constraints) {
         const getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia
-
         if (!getUserMedia) {
           return Promise.reject(new Error('您的浏览器不支持 getUserMedia API，请尝试使用 Chrome 浏览器'))
         }
-
         return new Promise((resolve, reject) => {
           getUserMedia.call(navigator, constraints, resolve, reject)
         })
       }
     }
-    
-    // 检查是否支持 enumerateDevices
-    if (!navigator.mediaDevices.enumerateDevices) {
-      console.warn('您的浏览器不支持 enumerateDevices API')
-    }
-
-    // 尝试获取设备列表
-    let videoDevices = []
-    try {
-      const devices = await navigator.mediaDevices.enumerateDevices()
-      videoDevices = devices.filter(device => device.kind === 'videoinput')
-      console.log('可用的视频设备:', videoDevices)
-    } catch (e) {
-      console.warn('获取设备列表失败:', e)
-    }
-
-    // 构建更宽松的视频约束
-    const constraints = {
+    // 构建增强但兼容性好的约束
+    let constraints = {
       video: {
-        // 使用更宽松的约束条件
-        width: { min: 320, ideal: 640, max: 1280 },
-        height: { min: 240, ideal: 480, max: 720 },
-        facingMode: { ideal: 'user' },
-        frameRate: { min: 15, ideal: 30 },
-        // 移除可能导致问题的参数
-        // aspectRatio: { ideal: 1.777777778 },
+        width: { ideal: 1280, max: 1920 },
+        height: { ideal: 720, max: 1080 },
+        facingMode: { ideal: 'user' }
+      },
+      audio: false
+    }
+    let lastError = null
+    try {
+      stream = await navigator.mediaDevices.getUserMedia(constraints)
+    } catch (e) {
+      // 降级约束再试一次
+      console.warn('高阶约束失败，尝试降级约束', e)
+      constraints = { video: true, audio: false }
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints)
+      } catch (err) {
+        lastError = err
+        throw err
       }
     }
-
-    console.log('尝试使用以下约束获取摄像头:', constraints)
-    
-    // 先尝试请求权限
-    try {
-      // 使用最简单的约束先请求权限
-      await navigator.mediaDevices.getUserMedia({ video: true })
-      console.log('基础权限请求成功')
-    } catch (e) {
-      console.error('基础权限请求失败:', e)
-      throw new Error('无法获取摄像头权限，请确保已授予权限')
-    }
-
-    // 然后使用完整约束获取流
-    stream = await navigator.mediaDevices.getUserMedia(constraints)
-    
     if (!video.value) {
       console.error('视频元素不存在')
       return
     }
-
-    // 设置视频元素属性
-    video.value.setAttribute('playsinline', '') // 确保在 iOS 上内联播放
-    video.value.setAttribute('webkit-playsinline', '') // 兼容旧版 iOS
+    video.value.setAttribute('playsinline', '')
+    video.value.setAttribute('webkit-playsinline', '')
     video.value.srcObject = stream
-    
-    // 等待视频加载完成
     await new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         reject(new Error('视频加载超时'))
-      }, 10000) // 10秒超时
-
+      }, 10000)
       video.value.onloadedmetadata = () => {
         clearTimeout(timeout)
-        console.log('视频元数据加载完成')
         resolve()
       }
-
       video.value.onerror = (error) => {
         clearTimeout(timeout)
-        console.error('视频加载错误:', error)
         reject(error)
       }
     })
-    
     isCameraActive.value = true
-    console.log('摄像头已启动')
     startDetection()
-    
-    // 如果弹幕开关是开启状态，启动弹幕
     if (showDanmaku.value) {
       startDanmaku()
     }
   } catch (error) {
     console.error('启动摄像头失败:', error)
-    // 提供更详细的错误信息
     let errorMessage = '无法访问摄像头，请确保已授予摄像头权限'
     if (error.name === 'NotAllowedError') {
       errorMessage = '摄像头访问被拒绝，请在浏览器设置中允许访问摄像头'
     } else if (error.name === 'NotFoundError') {
       errorMessage = '未找到可用的摄像头设备'
     } else if (error.name === 'NotReadableError') {
-      errorMessage = '摄像头可能被其他应用程序占用，请关闭其他使用摄像头的应用后重试'
+      errorMessage = '摄像头可能被其他应用程序占用，或设备初始化失败。\n\n请尝试：\n- 关闭其他使用摄像头的软件（如微信、QQ、会议软件等）\n- 拔插摄像头或更换 USB 端口\n- 关闭并重新打开浏览器\n- 重启电脑\n- 检查杀毒软件或安全软件设置\n- 若为笔记本，检查摄像头物理开关或隐私盖是否打开';
     } else if (error.name === 'OverconstrainedError') {
       errorMessage = '无法满足摄像头要求，请尝试使用其他浏览器'
     } else if (error.name === 'TypeError') {
@@ -456,11 +416,9 @@ const getMainExpression = (expressions) => {
 // 人脸检测
 const detectFaces = async () => {
   if (!isCameraActive.value) return
-
   try {
     // 确保视频元素已经准备好
     if (!video.value || !video.value.videoWidth) {
-      console.log('等待视频准备就绪...')
       return
     }
 
@@ -484,13 +442,11 @@ const detectFaces = async () => {
       currentExpression.value = ''
     }
 
-    // 调整canvas大小
-    const displaySize = { 
-      width: video.value.videoWidth, 
-      height: video.value.videoHeight 
+    // 不再动态设置 canvas/video 尺寸，始终用 100%
+    const displaySize = {
+      width: video.value.videoWidth,
+      height: video.value.videoHeight
     }
-    console.log('视频尺寸:', displaySize)
-    
     faceapi.matchDimensions(canvas.value, displaySize)
 
     // 调整检测结果大小
@@ -502,15 +458,12 @@ const detectFaces = async () => {
 
     // 根据设置绘制检测结果
     if (showFaceBox.value) {
-      console.log('绘制人脸框...')
       faceapi.draw.drawDetections(canvas.value, resizedDetections)
     }
     if (showLandmarks.value) {
-      console.log('绘制特征点...')
       faceapi.draw.drawFaceLandmarks(canvas.value, resizedDetections)
     }
     if (showExpressions.value) {
-      console.log('绘制表情...')
       faceapi.draw.drawFaceExpressions(canvas.value, resizedDetections)
     }
   } catch (error) {
@@ -689,26 +642,24 @@ onUnmounted(() => {
 .video-container {
   position: relative;
   width: 100%;
-  max-width: 800px;
+  max-width: 960px;
   aspect-ratio: 16/9;
-  background-color: #1a1a1a;
-  border-radius: 12px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f8f9fa 100%);
+  border-radius: 2rem;
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(60, 60, 60, 0.12), 0 1.5px 6px rgba(60,60,60,0.08);
+  margin-bottom: 2rem;
+  min-height: 360px;
 }
 
-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-canvas {
+video, canvas {
+  width: 100% !important;
+  height: 100% !important;
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 /* 弹幕样式 */
@@ -919,7 +870,6 @@ canvas {
 .settings-panel {
   display: flex;
   gap: clamp(1rem, 3vw, 2rem);
-  padding: clamp(0.75rem, 2vw, 1rem);
   background-color: #f5f5f5;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -1074,5 +1024,26 @@ canvas {
   height: 100vh;
   max-width: none;
   border-radius: 0;
+}
+
+@media (max-width: 600px) {
+  /* 只保留 .face-detection 和 .video-container 的组件级响应式，去除全局容器和主内容区的重复规则 */
+  .face-detection {
+    align-items: center;
+    width: 100vw;
+    min-width: 0;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  .video-container {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100vw;
+    min-width: 0;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    min-height: 180px;
+    box-sizing: border-box;
+  }
 }
 </style>
