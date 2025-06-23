@@ -7,30 +7,6 @@
         <i class="camera-icon">📷</i>
         <p>点击下方按钮启动摄像头</p>
       </div>
-      <!-- 弹幕层 -->
-      <div class="danmaku-container" v-if="showDanmaku">
-        <div 
-          v-for="(danmaku, index) in danmakuList" 
-          :key="index"
-          class="danmaku"
-          :style="{
-            top: danmaku.top + 'px',
-            left: danmaku.left + 'px',
-            opacity: danmaku.opacity,
-            transform: `scale(${danmaku.scale})`
-          }"
-        >
-          {{ danmaku.text }}
-        </div>
-      </div>
-      <!-- 颜值评分层 -->
-      <div class="beauty-score" v-if="showBeautyScore">
-        <div class="score-container">
-          <h2>颜值评分</h2>
-          <div class="score">{{ beautyScore }}</div>
-          <div class="score-description">{{ beautyDescription }}</div>
-        </div>
-      </div>
       <!-- 全屏按钮 -->
       <button 
         v-if="isCameraActive"
@@ -101,12 +77,6 @@
           显示表情
         </label>
       </div>
-      <div class="setting-item">
-        <label for="showDanmaku">
-          <input type="checkbox" v-model="showDanmaku" id="showDanmaku" @change="handleDanmakuToggle">
-          显示弹幕
-        </label>
-      </div>
     </div>
   </div>
 </template>
@@ -126,129 +96,8 @@ const showFaceBox = ref(true)
 const showLandmarks = ref(true)
 const showExpressions = ref(true)
 
-// 弹幕相关
-const showDanmaku = ref(false)
-const danmakuList = ref([])
-const danmakuTexts = [
-  '好帅啊！', '太美了！', '颜值爆表！', '气质真好！',
-  '皮肤真好！', '眼睛好漂亮！', '笑容真甜！', '好可爱！',
-  '太有魅力了！', '五官好精致！', '好有气质！', '太迷人了！',
-  '好漂亮！', '好帅气！', '太惊艳了！', '好有魅力！'
-]
-
-// 颜值评分相关
-const showBeautyScore = ref(false)
-const beautyScore = ref(0)
-const beautyDescription = ref('')
-
 let stream = null
 let detectionInterval = null
-let danmakuInterval = null
-
-// 处理弹幕开关
-const handleDanmakuToggle = () => {
-  if (showDanmaku.value) {
-    startDanmaku()
-  } else {
-    stopDanmaku()
-  }
-}
-
-// 生成随机弹幕
-const generateDanmaku = () => {
-  const container = document.querySelector('.video-container')
-  if (!container) return
-
-  const danmaku = {
-    text: danmakuTexts[Math.floor(Math.random() * danmakuTexts.length)],
-    top: Math.random() * (container.clientHeight - 30),
-    left: -200, // 从屏幕左侧开始
-    opacity: Math.random() * 0.5 + 0.5,
-    scale: Math.random() * 0.5 + 0.8,
-    speed: Math.random() * 3 + 6,
-    id: Date.now() + Math.random() // 唯一ID
-  }
-  
-  danmakuList.value.push(danmaku)
-  
-  // 增加最大弹幕数量
-  if (danmakuList.value.length > 50) {
-    danmakuList.value.shift()
-  }
-}
-
-// 开始弹幕动画
-const startDanmaku = () => {
-  if (!isCameraActive.value) return
-
-  danmakuList.value = []
-  showBeautyScore.value = false // 确保开始时隐藏评分
-
-  // 初始生成一些弹幕
-  for (let i = 0; i < 10; i++) {
-    generateDanmaku()
-  }
-
-  // 记录弹幕开始时间
-  const danmakuStartTime = Date.now()
-  let beautyScoreTriggered = false
-
-  // 定期生成新弹幕
-  danmakuInterval = setInterval(() => {
-    // 增加生成概率
-    if (Math.random() < 0.4) { // 40%的概率生成新弹幕
-      generateDanmaku()
-    }
-
-    // 更新所有弹幕位置
-    danmakuList.value = danmakuList.value.filter(danmaku => {
-      danmaku.left += danmaku.speed
-      // 检查是否需要触发颜值分数
-      if (!beautyScoreTriggered && Date.now() - danmakuStartTime >= 5000) {
-        calculateBeautyScore()
-        showBeautyScore.value = true
-        beautyScoreTriggered = true
-        // 停止生成新弹幕
-        if (danmakuInterval) {
-          clearInterval(danmakuInterval)
-          danmakuInterval = null
-        }
-      }
-      // 确保弹幕完全飞出屏幕右侧
-      return danmaku.left < window.innerWidth
-    })
-  }, 16) // 约60fps
-}
-
-// 停止弹幕
-const stopDanmaku = () => {
-  if (danmakuInterval) {
-    clearInterval(danmakuInterval)
-    danmakuInterval = null
-  }
-  danmakuList.value = []
-  showBeautyScore.value = false // 隐藏评分
-}
-
-// 计算颜值分数
-const calculateBeautyScore = () => {
-  // 基于人脸特征计算分数
-  const baseScore = Math.floor(Math.random() * 30) + 70 // 70-100之间的随机分数
-  beautyScore.value = baseScore
-  
-  // 根据分数生成描述
-  if (baseScore >= 95) {
-    beautyDescription.value = '绝世容颜！'
-  } else if (baseScore >= 90) {
-    beautyDescription.value = '倾国倾城！'
-  } else if (baseScore >= 85) {
-    beautyDescription.value = '天生丽质！'
-  } else if (baseScore >= 80) {
-    beautyDescription.value = '颜值出众！'
-  } else {
-    beautyDescription.value = '清新自然！'
-  }
-}
 
 // 加载人脸识别模型
 const loadModels = async () => {
@@ -344,9 +193,6 @@ const startCamera = async () => {
     })
     isCameraActive.value = true
     startDetection()
-    if (showDanmaku.value) {
-      startDanmaku()
-    }
   } catch (error) {
     console.error('启动摄像头失败:', error)
     let errorMessage = '无法访问摄像头，请确保已授予摄像头权限'
@@ -375,8 +221,6 @@ const stopCamera = () => {
     video.value.srcObject = null
     isCameraActive.value = false
     stopDetection()
-    stopDanmaku()
-    showBeautyScore.value = false
     // 清除 canvas 上的人脸框和特征点
     if (canvas.value) {
       const ctx = canvas.value.getContext('2d')
