@@ -18,13 +18,17 @@ import FaceDetection from './components/FaceDetection.vue'
 </script>
 
 <style>
-/* 现代化美观布局与响应式增强 */
+/* Google Material Design 风格重构与响应式增强 */
 :root {
-  --primary-color: #4CAF50;
-  --secondary-color: #2196F3;
-  --background-color: #f8f9fa;
-  --text-color: #333;
-  --header-bg: #fff;
+  --primary-color: #2196F3;
+  --primary-dark: #1565C0;
+  --secondary-color: #4CAF50;
+  --background-color: #f5f7fa;
+  --surface: #fff;
+  --text-color: #212121;
+  --subtitle-color: #607d8b;
+  --shadow: 0 2px 8px rgba(60,60,60,0.10), 0 1.5px 6px rgba(60,60,60,0.06);
+  --radius: 16px;
 }
 
 body {
@@ -35,89 +39,115 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--background-color);
   align-items: center;
-  width: 100vw;
+  background: var(--background-color);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.app-header,
+.app-main,
+.app-footer {
+  width: 100%;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
   box-sizing: border-box;
 }
 
 .app-header {
-  width: 100vw;
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  padding: 2.5rem 1rem 2rem 1rem;
+  background: var(--primary-color);
+  color: #fff;
+  padding: 2.5rem 2rem 1.5rem 2rem;
   text-align: center;
-  box-shadow: 0 4px 24px rgba(60, 60, 60, 0.10);
-  border-bottom-left-radius: 2.5rem;
-  border-bottom-right-radius: 2.5rem;
+  box-shadow: var(--shadow);
+  border-bottom-left-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
   position: relative;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .app-header h1 {
-  color: #fff;
-  font-size: 2.4rem;
-  margin-bottom: 0.5rem;
-  letter-spacing: 0.05em;
-  font-weight: 800;
-  text-shadow: 0 2px 8px rgba(76,175,80,0.10);
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  letter-spacing: 0.03em;
+  text-shadow: 0 2px 8px rgba(33,150,243,0.10);
 }
 
 .subtitle {
-  color: #e3f2fd;
+  color: var(--subtitle-color);
   font-size: 1.1rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  margin-bottom: 0.5rem;
 }
 
 .app-main {
   flex: 1;
-  width: 100vw;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2.5rem 1.5rem 2rem 1.5rem;
+  margin: -2rem auto 0 auto;
+  padding: 2rem 2rem 2rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  background: #fff;
-  border-radius: 2rem;
-  box-shadow: 0 8px 32px rgba(60, 60, 60, 0.10), 0 1.5px 6px rgba(60,60,60,0.06);
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   position: relative;
   z-index: 1;
   min-height: 60vh;
 }
 
 .app-footer {
-  width: 100vw;
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  padding: 1.2rem 1rem;
+  background: var(--surface);
+  color: var(--subtitle-color);
+  padding: 1.2rem 2rem;
   text-align: center;
   font-size: 1rem;
-  color: #fff;
-  box-shadow: 0 -4px 16px rgba(60, 60, 60, 0.08);
-  border-top-left-radius: 2.5rem;
-  border-top-right-radius: 2.5rem;
+  box-shadow: 0 -2px 8px rgba(60, 60, 60, 0.08);
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
   margin-top: 2rem;
 }
 
+/* Material Design 响应式卡片和按钮 */
+.app-main, .app-footer, .app-header {
+  transition: box-shadow 0.2s, border-radius 0.2s, padding 0.2s;
+}
+
 @media (max-width: 900px) {
-  .app-main {
-    max-width: 98vw;
-    padding: 1.2rem 0.5rem 1rem 0.5rem;
-    border-radius: 1.2rem;
-  }
-  .app-header, .app-footer {
-    border-radius: 1.2rem;
+  .app-header,
+  .app-main,
+  .app-footer {
+    max-width: 99vw;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
+  }
+  .app-main {
+    border-radius: 12px;
+    padding-top: 1.2rem;
+    padding-bottom: 1rem;
+  }
+  .app-header, .app-footer {
+    border-radius: 12px;
   }
 }
 
 @media (max-width: 600px) {
+  .app-header,
+  .app-main,
+  .app-footer {
+    max-width: 100vw;
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+  }
   .app-header {
-    padding: 1.2rem 0.5rem 1rem 0.5rem;
-    border-bottom-left-radius: 1rem;
-    border-bottom-right-radius: 1rem;
+    padding: 1.2rem 0.1rem 1rem 0.1rem;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
   }
   .app-header h1 {
     font-size: 1.1rem;
@@ -127,14 +157,14 @@ body {
   }
   .app-main {
     padding: 0.5rem 0.1rem 0.5rem 0.1rem;
-    border-radius: 0.7rem;
+    border-radius: 8px;
     min-height: 50vh;
     box-shadow: none;
   }
   .app-footer {
-    padding: 0.7rem 0.2rem;
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
+    padding: 0.7rem 0.1rem;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
     font-size: 0.85rem;
     margin-top: 1rem;
   }
