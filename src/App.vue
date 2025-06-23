@@ -33,8 +33,13 @@ import FaceDetection from './components/FaceDetection.vue'
 
 body {
   background: var(--background-color);
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
 }
 
+/* 页面结构和主布局样式，仅负责 header、main、footer、主卡片等，不写具体内容和功能区样式 */
 .app {
   min-height: 100vh;
   display: flex;
@@ -43,6 +48,8 @@ body {
   background: var(--background-color);
   width: 100%;
   box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
 }
 
 .app-header,
@@ -53,120 +60,118 @@ body {
   margin-left: auto;
   margin-right: auto;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .app-header {
   background: var(--primary-color);
   color: #fff;
-  padding: 2.5rem 2rem 1.5rem 2rem;
+  padding: 2rem 1rem 1.5rem;
   text-align: center;
   box-shadow: var(--shadow);
   border-bottom-left-radius: var(--radius);
   border-bottom-right-radius: var(--radius);
   position: relative;
   z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  margin-bottom: 1rem;
 }
 
 .app-header h1 {
   font-size: 2.2rem;
   font-weight: 700;
-  margin-bottom: 0.3rem;
+  margin: 0 0 0.3rem;
   letter-spacing: 0.03em;
   text-shadow: 0 2px 8px rgba(33,150,243,0.10);
+  width: 100%;
+  text-align: center;
 }
 
 .subtitle {
-  color: var(--subtitle-color);
+  color: rgba(255, 255, 255, 0.9);
   font-size: 1.1rem;
   font-weight: 400;
   letter-spacing: 0.01em;
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.5rem;
+  width: 100%;
+  text-align: center;
 }
 
 .app-main {
   flex: 1;
-  margin: -2rem auto 0 auto;
-  padding: 2rem 2rem 2rem 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  padding: 0 1rem;
   background: var(--surface);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   position: relative;
   z-index: 1;
   min-height: 60vh;
+  margin-top: 0;
 }
 
 .app-footer {
   background: var(--surface);
   color: var(--subtitle-color);
-  padding: 1.2rem 2rem;
+  padding: 1.2rem 1rem;
   text-align: center;
   font-size: 1rem;
   box-shadow: 0 -2px 8px rgba(60, 60, 60, 0.08);
   border-top-left-radius: var(--radius);
   border-top-right-radius: var(--radius);
-  margin-top: 2rem;
+  margin-top: 1rem;
+  width: 100%;
 }
 
-/* Material Design 响应式卡片和按钮 */
 .app-main, .app-footer, .app-header {
-  transition: box-shadow 0.2s, border-radius 0.2s, padding 0.2s;
+  transition: all 0.3s ease;
 }
 
 @media (max-width: 900px) {
   .app-header,
   .app-main,
   .app-footer {
-    max-width: 99vw;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    max-width: 100%;
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: calc(var(--radius) / 2);
   }
   .app-main {
-    border-radius: 12px;
-    padding-top: 1.2rem;
-    padding-bottom: 1rem;
-  }
-  .app-header, .app-footer {
-    border-radius: 12px;
+    margin-top: 0;
   }
 }
 
 @media (max-width: 600px) {
+  .app {
+    padding: 0;
+  }
   .app-header,
   .app-main,
   .app-footer {
-    max-width: 100vw;
-    padding-left: 0.1rem;
-    padding-right: 0.1rem;
+    width: 100%;
+    padding: 1rem 0.5rem;
+    border-radius: calc(var(--radius) / 3);
   }
   .app-header {
-    padding: 1.2rem 0.1rem 1rem 0.1rem;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+    padding-top: 1rem;
+    margin-bottom: 0.5rem;
   }
   .app-header h1 {
-    font-size: 1.1rem;
+    font-size: 1.5rem;
   }
   .subtitle {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
   }
   .app-main {
-    padding: 0.5rem 0.1rem 0.5rem 0.1rem;
-    border-radius: 8px;
-    min-height: 50vh;
+    padding: 0.5rem;
     box-shadow: none;
+    margin: 0;
   }
   .app-footer {
-    padding: 0.7rem 0.1rem;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
     font-size: 0.85rem;
-    margin-top: 1rem;
+    padding: 0.7rem 0.5rem;
+    margin-top: 0.5rem;
   }
 }
 </style>

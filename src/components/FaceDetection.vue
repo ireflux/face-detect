@@ -632,11 +632,9 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
-  padding: 1rem;
-  max-width: 1200px;
-  margin: 0 auto;
   width: 100%;
+  gap: 1.5rem;
+  box-sizing: border-box;
 }
 
 .video-container {
@@ -645,10 +643,10 @@ onUnmounted(() => {
   max-width: 960px;
   aspect-ratio: 16/9;
   background: linear-gradient(135deg, #e3f2fd 0%, #f8f9fa 100%);
-  border-radius: 2rem;
+  border-radius: 1rem;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(60, 60, 60, 0.12), 0 1.5px 6px rgba(60,60,60,0.08);
-  margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(60, 60, 60, 0.12);
+  margin: 0 auto;
   min-height: 360px;
 }
 
@@ -662,332 +660,104 @@ video, canvas {
   display: block;
 }
 
-/* 弹幕样式 */
-.danmaku-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 10;
-  overflow: hidden;
-}
-
-.danmaku {
-  position: absolute;
-  color: white;
-  font-size: clamp(1rem, 2vw, 1.5rem);
-  font-weight: bold;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-  white-space: nowrap;
-  will-change: transform;
-  transform: translateX(0);
-  transition: transform 0.3s ease;
-}
-
-/* 颜值评分样式 */
-.beauty-score {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.8);
-  z-index: 20;
-  animation: fadeIn 0.5s ease;
-}
-
-.score-container {
-  text-align: center;
-  color: white;
-  animation: scaleIn 0.5s ease;
-  padding: 2rem;
-  border-radius: 1rem;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(5px);
-}
-
-.score-container h2 {
-  font-size: 2.5rem;
-  margin-bottom: 1.5rem;
-  color: #ffd700;
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-}
-
-.score {
-  font-size: 6rem;
-  font-weight: bold;
-  color: #ffd700;
-  text-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
-  margin-bottom: 1.5rem;
-  animation: pulse 2s infinite;
-}
-
-.score-description {
-  font-size: 2rem;
-  color: #fff;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
-  }
-  50% {
-    transform: scale(1.1);
-    text-shadow: 0 0 30px rgba(255, 215, 0, 0.9);
-  }
-  100% {
-    transform: scale(1);
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
-  }
-}
-
-.camera-placeholder {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-}
-
-.camera-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
 .controls {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   width: 100%;
-  max-width: 800px;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
 }
 
 .control-button {
-  display: flex;
+  flex: 0 1 auto;
+  min-width: max-content;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  padding: clamp(0.5rem, 2vw, 0.75rem) clamp(1rem, 3vw, 1.5rem);
-  font-size: clamp(0.9rem, 2vw, 1rem);
-  font-weight: 500;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 0.5rem;
   white-space: nowrap;
-}
-
-.control-button.start {
-  background-color: #4CAF50;
-}
-
-.control-button.stop {
-  background-color: #f44336;
-}
-
-.control-button.test {
-  background-color: #2196F3;
-}
-
-.control-button.test:hover {
-  background-color: #1976D2;
-}
-
-.control-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-.button-icon {
-  font-size: 1.2rem;
+  transition: all 0.3s ease;
 }
 
 .detection-info {
   display: flex;
   gap: 1rem;
   width: 100%;
-  max-width: 800px;
   flex-wrap: wrap;
+  justify-content: center;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
 }
 
 .info-card {
-  flex: 1;
-  min-width: 200px;
-  padding: clamp(0.75rem, 2vw, 1rem);
-  background-color: #f5f5f5;
-  border-radius: 8px;
+  flex: 1 1 200px;
+  max-width: calc(50% - 0.5rem);
+  min-width: 150px;
+  padding: 0.75rem;
+  background-color: var(--surface);
+  border-radius: 0.5rem;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.info-card h3 {
-  margin: 0;
-  font-size: clamp(0.9rem, 2vw, 1rem);
-  color: #666;
-}
-
-.info-card p {
-  margin: 0.5rem 0 0;
-  font-size: clamp(1.2rem, 3vw, 1.5rem);
-  font-weight: bold;
-  color: #333;
+  box-shadow: var(--shadow);
 }
 
 .settings-panel {
   display: flex;
-  gap: clamp(1rem, 3vw, 2rem);
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  gap: 1rem;
   flex-wrap: wrap;
   justify-content: center;
   width: 100%;
-  max-width: 800px;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  background-color: var(--surface);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow);
 }
 
-.setting-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  white-space: nowrap;
-}
-
-.setting-item label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  user-select: none;
-  font-size: clamp(0.9rem, 2vw, 1rem);
-}
-
-.setting-item input[type="checkbox"] {
-  width: clamp(1rem, 2vw, 1.2rem);
-  height: clamp(1rem, 2vw, 1.2rem);
-  cursor: pointer;
-}
-
-/* 响应式布局调整 */
-@media (max-width: 768px) {
+/* 移动端优化 */
+@media (max-width: 600px) {
   .face-detection {
-    padding: 0.5rem;
+    gap: 1rem;
+    padding: 0;
   }
-
   .video-container {
-    border-radius: 8px;
+    border-radius: 0.5rem;
+    min-height: 220px;
+    margin: 0;
+    width: 100%;
   }
-
   .controls {
+    padding: 0 0.25rem;
+    gap: 0.25rem;
+  }
+  .control-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  .detection-info {
+    padding: 0 0.25rem;
     gap: 0.5rem;
   }
-
-  .detection-info {
-    flex-direction: column;
-  }
-
-  .settings-panel {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-
-  .setting-item {
-    width: 100%;
-  }
-}
-
-/* 小屏幕设备优化 */
-@media (max-width: 480px) {
-  .control-button {
-    width: 100%;
-    justify-content: center;
-  }
-
   .info-card {
-    min-width: 100%;
+    flex: 1 1 120px;
+    min-width: 120px;
+    padding: 0.5rem;
   }
-}
-
-/* 大屏幕设备优化 */
-@media (min-width: 1200px) {
-  .face-detection {
-    max-width: 1400px;
-  }
-
-  .video-container {
-    max-width: 1000px;
-  }
-
-  .controls,
-  .detection-info,
   .settings-panel {
-    max-width: 1000px;
+    padding: 0.25rem;
+    gap: 0.5rem;
+  }
+  .setting-item {
+    font-size: 0.85rem;
   }
 }
 
-.fullscreen-button {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.5);
-  border: none;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  z-index: 30;
-}
-
-.fullscreen-button:hover {
-  background-color: rgba(0, 0, 0, 0.8);
-  transform: scale(1.1);
-}
-
-.fullscreen-button .button-icon {
-  font-size: 1.5rem;
-  line-height: 1;
-}
-
-/* 全屏模式下的样式调整 */
+/* 全屏模式优化 */
 .video-container:fullscreen {
   width: 100vw;
   height: 100vh;
@@ -997,53 +767,6 @@ video, canvas {
 
 .video-container:fullscreen video,
 .video-container:fullscreen canvas {
-  width: 100%;
-  height: 100%;
   object-fit: contain;
-}
-
-/* 兼容 Webkit 浏览器 */
-.video-container:-webkit-full-screen {
-  width: 100vw;
-  height: 100vh;
-  max-width: none;
-  border-radius: 0;
-}
-
-/* 兼容 Firefox */
-.video-container:-moz-full-screen {
-  width: 100vw;
-  height: 100vh;
-  max-width: none;
-  border-radius: 0;
-}
-
-/* 兼容 IE */
-.video-container:-ms-fullscreen {
-  width: 100vw;
-  height: 100vh;
-  max-width: none;
-  border-radius: 0;
-}
-
-@media (max-width: 600px) {
-  /* 只保留 .face-detection 和 .video-container 的组件级响应式，去除全局容器和主内容区的重复规则 */
-  .face-detection {
-    align-items: center;
-    width: 100vw;
-    min-width: 0;
-    margin: 0 auto;
-    box-sizing: border-box;
-  }
-  .video-container {
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 100vw;
-    min-width: 0;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-    min-height: 180px;
-    box-sizing: border-box;
-  }
 }
 </style>

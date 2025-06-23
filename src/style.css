@@ -1,15 +1,36 @@
-/* 全局基础样式，仅保留 html、body、全局字体、a、button、#app 等，不涉及页面结构和组件内容 */
+/* 全局基础样式和变量，只保留字体、reset、全局变量、body、a、button，不涉及页面结构和内容 */
 :root {
+  --primary-color: #2196F3;
+  --primary-dark: #1565C0;
+  --secondary-color: #4CAF50;
+  --background-color: #f5f7fa;
+  --surface: #fff;
+  --text-color: #212121;
+  --subtitle-color: #607d8b;
+  --shadow: 0 2px 8px rgba(60,60,60,0.10), 0 1.5px 6px rgba(60,60,60,0.06);
+  --radius: 16px;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--text-color);
+  background-color: var(--background-color);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  width: 100%;
+  background: var(--background-color);
+  color: var(--text-color);
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 a {
@@ -19,19 +40,6 @@ a {
 }
 a:hover {
   color: #535bf2;
-}
-
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  width: 100vw;
-  overflow-x: hidden;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
 }
 
 button {
@@ -53,15 +61,10 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-.card {
-  padding: 2em;
-}
-
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (prefers-color-scheme: light) {
